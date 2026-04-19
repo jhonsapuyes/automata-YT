@@ -45,7 +45,7 @@ export default function HomeScreen() {
     setViewBtn(situacion)
   }
 
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Estado para controlar el login
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para controlar el login
   const [userD, setUserD] = useState([]); // Estado para controlar el login
   const handleLoginSuccess = async (dt1,dt2) => {
     const login= async (pt1,pt2) =>{
@@ -168,8 +168,6 @@ export default function HomeScreen() {
   else if(isLoggedIn == true){
     return (
       <View>
-      {/* <MiComponente1 duracion={12}/> */}
-      {/* <MiComponente2 /> */}
         <AuthScreen 
           closeApp={closeApp}
           cambiarPagina={cambiarPagina} 

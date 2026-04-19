@@ -1,6 +1,6 @@
 
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -11,7 +11,46 @@ import {
   View
 } from 'react-native';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
+
 const LoginScreen = ({ onLoginSuccess }) => {
+
+  const guardarDeviceId = async () => {
+    try {
+      let deviceId = await AsyncStorage.getItem('device_id');
+
+      if (!deviceId) {
+        deviceId = uuidv4();
+        await AsyncStorage.setItem('device_id', deviceId);
+        console.log("🆕 Nuevo deviceId creado:", deviceId);
+      } else {
+        console.log("📱 deviceId existente:", deviceId);
+      }
+
+      return deviceId;
+    } catch (error) {
+      console.log('❌ Error obteniendo device_id:', error);
+      return null;
+    }
+  };
+  useEffect(() => {
+    const initApp = async () => {
+      const idDevice = await guardarDeviceId();
+
+      if (!idDevice) {
+        Alert.alert('Error', 'No se pudo obtener el device_id');
+        return;
+      }
+
+      console.log("🚀 ID listo:", idDevice);
+
+      // 👉 aquí ya puedes usarlo (login, supabase, etc)
+    };
+
+  initApp();
+}, []);
 
 
   const [usuario, setUsuario] = useState('');
