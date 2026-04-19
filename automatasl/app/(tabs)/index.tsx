@@ -1,53 +1,198 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import AuthScreen from '../components/initComponents/authZona.js';
+import LoginScreen from '../components/initComponents/loginApp.js';
 
 import { resources } from '../../services/synchronize/controllers/main.js';
 
-
 export default function HomeScreen() {
 
+  const handleSaveVideo= async (saveData) =>{
+    let respSave= await resources.saveVideos(saveData.url,saveData.platform)
+    if(respSave == true){
+      console.log("guardado","index")
+    }
+    else if(respSave == false){
+      console.log("no gurdado","index")
+    }
+  }
+
+  const tAutomatized= 24
+  const [timeView, setTimeView] = useState(12);
+  const [timeAutomatic, setTimeAutomatic] = useState(tAutomatized);
+  const [activo, setActivo] = useState(false);
+  const activoRef = useRef(activo);
+  useEffect(() => {
+    activoRef.current = activo;
+  }, [activo]);
+
+  const [modalWebview, setModalWebview] = useState(false);
+  const [bloqueado, setBloqueado] = useState(true);
+  const [urlWebview, seturlWebview] = useState(true);
+  const [automatic, setAutomatic] = useState(true);
+  const [viewBtn, setViewBtn] = useState(false);
+  const handleWebviewClose= (situacion) =>{
+    if(situacion == "end"){
+      setModalWebview(false);
+      ctrlBtns(false)
+    }
+    else if(situacion == "sessions"){
+      setModalWebview(false);
+    }
+  }
+  const ctrlBtns= (situacion) =>{
+    setViewBtn(situacion)
+  }
+
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // Estado para controlar el login
+  const [userD, setUserD] = useState([]); // Estado para controlar el login
+  const handleLoginSuccess = async (dt1,dt2) => {
     const login= async (pt1,pt2) =>{
       let respData= await resources.login(pt1,pt2);
-      console.log(respData)
       if(respData == false){
-        console.log("exit")
+        setIsLoggedIn(false);
       }
       else if(respData[5] == true){
-        console.log("next",respData)
+        setUserD(respData[0],respData[2],respData[3])
+        setIsLoggedIn(respData[5]);
       }
     }
-    //login("anderson","pass")
+    login("anderson","pass")  
+    console.log(dt1,dt2,"index")  
+  };
+  const closeApp= (pt1)=>{
+    setIsLoggedIn(pt1);
+    setUserD([]);
+  };
 
+  const [numero, setNumero] = useState(0);
+  const [datos, setDatos] = useState([]);
+  useEffect(() => {
+    if (isLoggedIn) {
+      cargarDatos();
+    }
+  }, [isLoggedIn]);
+  const cargarDatos = async () => {
     const listVideos= async (pt1) =>{
       let respData= await resources.listarVideos(pt1);
-      console.log(respData)
+      console.log(respData,"index")
       if(respData == null){
         console.log("EMPTY LIST")
       }
       else{
-        console.log("next",respData)
+        //console.log(respData,"index")
+        return respData;
       }
     }
-    //listVideos("and1")
+    const resultado = await listVideos("and1");
+    setDatos(resultado);
+  };
 
-    const publicarVideo= async (pt1,pt2) =>{
-      let respData= await resources.saveVideos(pt1,pt2);
-      console.log(respData)
+  const [pageUse, setPageUse] = useState(true);
+  const cambiarPagina = (valor) => {
+    setPageUse(valor);
+    cargarDatos();
+  };
+
+  const abrirVideo= (url,automatic,suscribir,activo)=>{
+    console.log(url,automatic,suscribir,activo,"indexx")
+    if(suscribir == true && automatic == false ){
+      setModalWebview(true)
+      setBloqueado(false)
+      seturlWebview(url);
+      setAutomatic(false)
     }
-    //publicarVideo("https://youtu.be/E3KPq4JreVY","and1")
-
-    const borrarvideo= async (pt1,pt2) =>{
-      let respData= await resources.eraseVideo(pt1,pt2);
-      console.log(respData)
+    else if(suscribir == false && activo == true){
+      setActivo(true)
+      setModalWebview(true)
+      setBloqueado(true)
+      seturlWebview(url);
+      setAutomatic(true)
+      videoNext(1)
     }
-    //borrarvideo("https://youtu.be/E3KPq4JreVYs","and1")
+    else if(suscribir == false && activo == false){
+      setActivo(true)
+      setModalWebview(true)
+      setBloqueado(true)
+      seturlWebview(url);
+      setAutomatic(false)
+      videoNext(1)
+    }
+  };
+  const videoNext= (nextN)=>{
+    if(numero == (datos.length-1)){
+      setNumero(0)
+    }
+    else if(numero < (datos.length-1)){
+      setNumero(numero+nextN)
+    }
+    console.log(datos.length-1, numero,nextN,"index")
+  };
+  const suscribir= (dato)=>{
+    abrirVideo(dato[0],dato[1],dato[2])
+    console.log(dato,"index")
+  }
+  const automatizar= (dato)=>{
+    abrirVideo(dato[0],dato[1],dato[2],dato[3])
+    console.log(dato,"index")
+  }
+  const stopAutomatizar= (dato)=>{
+    setActivo(dato)
+  }
+  const sincronizarTimeAutomatizacion= (dato)=>{
+    if(dato == 0){
+      setTimeAutomatic(tAutomatized)
+    }
+    else if(dato > 0){
+      setTimeAutomatic(dato)
+    }
+  }
+  const sincronizarAutomatizacion = (data) => {
+    if (activoRef.current === true) {
+      abrirVideo(data, true, false, true);
+    } 
+    else {
+      setTimeAutomatic(tAutomatized)
+      console.log("⛔ automatización detenida");
+    }
+  };
 
-  return (
-    <View>
-      <View><Text>header </Text></View>
-      <View><Text>session</Text></View>
-      <View><Text>footer</Text></View>
-    </View>
-  );
+
+
+  if (isLoggedIn == false) {
+    return (
+      <LoginScreen onLoginSuccess={handleLoginSuccess} />
+    );
+  }
+  else if(isLoggedIn == true){
+    return (
+      <View>
+      {/* <MiComponente1 duracion={12}/> */}
+      {/* <MiComponente2 /> */}
+        <AuthScreen 
+          closeApp={closeApp}
+          cambiarPagina={cambiarPagina} 
+          pageUse={pageUse}
+          listVideos={datos}
+          numero={numero}
+          openVideo={abrirVideo}
+          videoNext={videoNext}
+          suscribir={suscribir}
+          automatizar={automatizar}
+          onStop={stopAutomatizar}
+          automataAtivo={viewBtn}
+          ctrlBtns={ctrlBtns}
+          webview={{ 
+            visible: modalWebview, bloqueado:bloqueado, url:urlWebview, onClose:handleWebviewClose, 
+            time:timeView, automatiTime:timeAutomatic,sincronizarTime:sincronizarTimeAutomatizacion,
+            automatic:automatic,sincronizarAutomatizacion:sincronizarAutomatizacion
+          }}
+          pageCampaña={{onsaved:handleSaveVideo}}
+        />
+        </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
