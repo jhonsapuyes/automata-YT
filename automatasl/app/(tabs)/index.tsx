@@ -180,7 +180,7 @@ export default function HomeScreen() {
   }
   const sincronizarTimeAutomatizacion= (dato)=>{
     if(dato == 0){
-      setTimeAutomatic(tAutomatized)
+      setTimeAutomatic(tAutomatizedSecond)
     }
     else if(dato > 0){
       setTimeAutomatic(dato)
@@ -191,7 +191,7 @@ export default function HomeScreen() {
       abrirVideo(data, true, false, true);
     } 
     else {
-      setTimeAutomatic(tAutomatized)
+      setTimeAutomatic(tAutomatizedSecond)
       console.log("⛔ automatización detenida");
     }
   };

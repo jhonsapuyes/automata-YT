@@ -106,7 +106,7 @@ export function MiComponente2({
 
   return (
     <>
-      <Text>Finaliza En: {tiempo} segundos</Text>
+      <Text>Finaliza En: {tiempo} Segundos</Text>
       {/* <Text>Sub: {subTiempo}</Text> */}
     </>
   );
