@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -14,6 +15,8 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
+
+
 
 const LoginScreen = ({ onLoginSuccess }) => {
 
@@ -38,19 +41,15 @@ const LoginScreen = ({ onLoginSuccess }) => {
   useEffect(() => {
     const initApp = async () => {
       const idDevice = await guardarDeviceId();
-
       if (!idDevice) {
         Alert.alert('Error', 'No se pudo obtener el device_id');
         return;
       }
-
-      console.log("🚀 ID listo:", idDevice);
-
-      // 👉 aquí ya puedes usarlo (login, supabase, etc)
+      //console.log("🚀 ID listo:", idDevice);
     };
 
-  initApp();
-}, []);
+    initApp();
+  }, []);
 
 
   const [usuario, setUsuario] = useState('');
@@ -59,6 +58,8 @@ const LoginScreen = ({ onLoginSuccess }) => {
   const handleLogin = async (pt1,pt2) => {
     onLoginSuccess(pt1,pt2)
   };
+
+  
 
   return (
     <KeyboardAvoidingView

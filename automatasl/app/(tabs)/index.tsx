@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import AuthScreen from '../components/initComponents/authZona.js';
 import LoginScreen from '../components/initComponents/loginApp.js';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { resources } from '../../services/synchronize/controllers/main.js';
+import { actualizarDataUser } from '../../services/synchronize/ctrl_user.js';
+
 
 export default function HomeScreen() {
 
@@ -18,9 +21,10 @@ export default function HomeScreen() {
     }
   }
 
-  const tAutomatized= 24
+  const tAutomatizedH= 1
+  const tAutomatizedSecond= (tAutomatizedH *60)*60
   const [timeView, setTimeView] = useState(12);
-  const [timeAutomatic, setTimeAutomatic] = useState(tAutomatized);
+  const [timeAutomatic, setTimeAutomatic] = useState(tAutomatizedSecond);
   const [activo, setActivo] = useState(false);
   const activoRef = useRef(activo);
   useEffect(() => {
@@ -50,21 +54,55 @@ export default function HomeScreen() {
   const handleLoginSuccess = async (dt1,dt2) => {
     const login= async (pt1,pt2) =>{
       let respData= await resources.login(pt1,pt2);
-      if(respData == false){
-        setIsLoggedIn(false);
-      }
-      else if(respData[5] == true){
-        setUserD(respData[0],respData[2],respData[3])
-        setIsLoggedIn(respData[5]);
-      }
+      return respData;
     }
-    login("anderson","pass")  
-    console.log(dt1,dt2,"index")  
+    const handleLogin = async (pt1,pt2) => {
+      let datalogin= await login(pt1,pt2)  
+
+      const idDevice = await AsyncStorage.getItem('device_id');
+
+      // Aquí puedes agregar tu lógica de autenticación real
+      if (pt1.trim() === '' || pt2.trim() === '') {
+        Alert.alert('Error', 'Por favor, completa todos los campos');
+        return;
+      }
+      else if(datalogin == false || datalogin == undefined){
+        Alert.alert('Error', 'Datos No Existen');
+        return;
+      }
+      else if(datalogin[5] == true && datalogin[0] == "and1"){
+        if(idDevice == datalogin[7] && datalogin[6] == "activada"){
+          let respD=[datalogin[2],datalogin[3],datalogin[5]]
+            setUserD(respD)
+            setIsLoggedIn(datalogin[5]);
+        }
+        else if(datalogin[6] == "desactivada"){
+          let respD=[datalogin[2],datalogin[3],datalogin[5]]
+          setUserD(respD)
+          setIsLoggedIn(datalogin[5]);
+          const idDevice = await AsyncStorage.getItem('device_id');
+
+          actualizarDataUser("activada",idDevice,datalogin[1])
+        }
+        else if(idDevice != datalogin[8] && datalogin[6] == "activada"){
+          Alert.alert('Error', 'Cuenta Activada');        
+        }
+      }  
+      else{
+        Alert.alert(JSON.stringify(datalogin), 'Datos No Existen');
+      }  
+    };
+    handleLogin(dt1,dt2)
   };
-  const closeApp= (pt1)=>{
+
+  const closeApp = async (pt1) => {
+    let getUserD= await resources.login(userD[0],userD[1]);
+    let ptuser= getUserD[1];
+    const idDeviceUse = await AsyncStorage.getItem('device_id');
+    await actualizarDataUser("desactivada",idDeviceUse,ptuser)
     setIsLoggedIn(pt1);
-    setUserD([]);
-  };
+    setUserD([])
+  }
 
   const [numero, setNumero] = useState(0);
   const [datos, setDatos] = useState([]);

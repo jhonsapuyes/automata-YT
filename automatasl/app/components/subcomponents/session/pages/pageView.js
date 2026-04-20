@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     viewZona: {
         width:"100%", 
         height:"100%",
-        backgroundColor:"purple"
+        backgroundColor:"red"
     },
     session1: {
         backgroundColor:"black",
