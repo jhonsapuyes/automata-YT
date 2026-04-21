@@ -27,14 +27,13 @@ const LoginScreen = ({ onLoginSuccess }) => {
       if (!deviceId) {
         deviceId = uuidv4();
         await AsyncStorage.setItem('device_id', deviceId);
-        console.log("🆕 Nuevo deviceId creado:", deviceId);
-      } else {
-        console.log("📱 deviceId existente:", deviceId);
-      }
+      } 
+      else {}
 
       return deviceId;
-    } catch (error) {
-      console.log('❌ Error obteniendo device_id:', error);
+    } 
+    catch (error) {
+      Alert.alert('Error obteniendo device_id:', error);              
       return null;
     }
   };
@@ -45,7 +44,6 @@ const LoginScreen = ({ onLoginSuccess }) => {
         Alert.alert('Error', 'No se pudo obtener el device_id');
         return;
       }
-      //console.log("🚀 ID listo:", idDevice);
     };
 
     initApp();

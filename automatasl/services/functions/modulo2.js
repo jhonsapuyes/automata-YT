@@ -48,12 +48,28 @@ export function MiComponente2({
   numero
 }) {
 
+  const getRandomSubTiempo = () => {
+    let aleatorio1 = Math.floor(Math.random() * 10)+1; // 0–9
+    let aleatorio2 = Math.floor(Math.random() * 20) + 26; // 26–45
+
+    let subtime = Math.floor(Math.random() * (33 + aleatorio1)) + aleatorio2;
+
+    return subtime
+  };
+
+  const getRandomTpausa = () => {
+    let aleatorio1 = Math.floor(Math.random() * (6 - 3 + 1)) + 3;
+    return (aleatorio1*1000)
+  }
+
   const url = videoData?.[numero];
 
 
   const [tiempo, setTiempo] = useState(duracion);
-  const [subTiempo, setSubTiempo] = useState(subDuracion);
+  const [subTiempo, setSubTiempo] = useState(getRandomSubTiempo());
   const [paused, setPaused] = useState(false);
+  const [tpausa, setTpausa] = useState(getRandomTpausa());
+
 
   const intervaloRef = useRef(null);
 
@@ -63,7 +79,6 @@ export function MiComponente2({
 
     intervaloRef.current = setInterval(() => {
       setTiempo((prev) => {
-        console.log(prev,"m2")
 
         if (prev === 0) return 0;
         return prev - 1;
@@ -71,17 +86,19 @@ export function MiComponente2({
 
       setSubTiempo((prev) => {
         if (prev === 0) {
-          return subDuracion; // 🔁 reinicia subcontador
+          //return subDuracion; // 🔁 reinicia subcontador
+          return getRandomSubTiempo();
         }
         return prev - 1;
       });
     }, 1000);
 
     return () => clearInterval(intervaloRef.current);
-  }, [paused, subDuracion]);
+  }, [paused, subTiempo]);
 
   // 🔁 detectar ciclo de 12s (FUERA del setState)
   useEffect(() => {
+
     if (subTiempo === 0 && tiempo > 0) {
       setPaused(true);
       onclose("sessions"); 
@@ -91,7 +108,7 @@ export function MiComponente2({
         onTimeSincronized(tiempo)
         sincronizarAutomatizacion(url)
         setPaused(false); // ▶️ reanuda
-      }, 3000);
+      }, tpausa);
     }
   }, [subTiempo, tiempo, onclose]);
 
@@ -107,7 +124,7 @@ export function MiComponente2({
   return (
     <>
       <Text>Finaliza En: {tiempo} Segundos</Text>
-      {/* <Text>Sub: {subTiempo}</Text> */}
+      <Text>Sub: {subTiempo}</Text>
     </>
   );
 

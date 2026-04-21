@@ -14,7 +14,7 @@ export default function PageCampaña({ onsave }) {
     const respData = await resources.listarVideos("and1");
 
     if (!respData) {
-      console.log("EMPTY LIST");
+      Alert.alert("EMPTY LIST");
       setListData([]);
       return;
     }

@@ -1,4 +1,7 @@
 
+// no hay funcionalidad solo son referencias de para peticiones
+
+
 
     const login= async (pt1,pt2) =>{
       let respData= await resources.login(pt1,pt2);

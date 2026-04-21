@@ -13,7 +13,7 @@ export const actualizarDataUser = async (userState, deviceId,userId) => {
       .eq('id', userId) // 👈 importante
 
     if (error) {
-      console.log('Error:', error.message);
+      Alert.alert('Error:', error.message);              
       return null;
     }
 
@@ -21,6 +21,6 @@ export const actualizarDataUser = async (userState, deviceId,userId) => {
     return data;
 
   } catch (err) {
-    console.log('Error inesperado:', err);
+    Alert.alert('Error inesperado:', err);              
   }
 };

@@ -14,14 +14,14 @@ export default function HomeScreen() {
   const handleSaveVideo= async (saveData) =>{
     let respSave= await resources.saveVideos(saveData.url,saveData.platform)
     if(respSave == true){
-      console.log("guardado","index")
+      Alert.alert("guardado");
     }
     else if(respSave == false){
-      console.log("no gurdado","index")
+      Alert.alert("no gurdado");
     }
   }
 
-  const tAutomatizedH= 1
+  const tAutomatizedH= 2
   const tAutomatizedSecond= (tAutomatizedH *60)*60
   const [timeView, setTimeView] = useState(12);
   const [timeAutomatic, setTimeAutomatic] = useState(tAutomatizedSecond);
@@ -114,12 +114,10 @@ export default function HomeScreen() {
   const cargarDatos = async () => {
     const listVideos= async (pt1) =>{
       let respData= await resources.listarVideos(pt1);
-      console.log(respData,"index")
       if(respData == null){
-        console.log("EMPTY LIST")
+        Alert.alert("EMPTY LIST");              
       }
       else{
-        //console.log(respData,"index")
         return respData;
       }
     }
@@ -134,7 +132,6 @@ export default function HomeScreen() {
   };
 
   const abrirVideo= (url,automatic,suscribir,activo)=>{
-    console.log(url,automatic,suscribir,activo,"indexx")
     if(suscribir == true && automatic == false ){
       setModalWebview(true)
       setBloqueado(false)
@@ -165,15 +162,12 @@ export default function HomeScreen() {
     else if(numero < (datos.length-1)){
       setNumero(numero+nextN)
     }
-    console.log(datos.length-1, numero,nextN,"index")
   };
   const suscribir= (dato)=>{
     abrirVideo(dato[0],dato[1],dato[2])
-    console.log(dato,"index")
   }
   const automatizar= (dato)=>{
     abrirVideo(dato[0],dato[1],dato[2],dato[3])
-    console.log(dato,"index")
   }
   const stopAutomatizar= (dato)=>{
     setActivo(dato)
@@ -192,7 +186,7 @@ export default function HomeScreen() {
     } 
     else {
       setTimeAutomatic(tAutomatizedSecond)
-      console.log("⛔ automatización detenida");
+      Alert.alert("automatización detenida");              
     }
   };
 

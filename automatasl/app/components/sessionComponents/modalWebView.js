@@ -29,7 +29,7 @@ export default function LoginWebViewModal({ webview, openVideo,videoData=[],nume
             </Text>
           )}
           {webview.bloqueado && webview.automatic &&(
-            <Text style={{ fontSize: 20,color:"white"}}>
+            <Text style={{ fontSize: 15,color:"white"}}>
               Espera <MiComponente2 
               sincronizarAutomatizacion={webview.sincronizarAutomatizacion}
               onTimeSincronized={webview.sincronizarTime}
